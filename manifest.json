@@ -1,0 +1,17 @@
+{
+    "manifest_version" : 3,
+    "name" : "tabliss", 
+    "version" : "1.0",
+    "action" :{
+        "default_icon" : "images/home_house_128.png"
+    },
+    "description" : "An extension for your home page, with background and to-do list.", 
+    "icons":{
+        "128":"images/home_house_128.png",
+        "64":"images/home_house_64.png",
+        "48":"images/home_house_48.png"
+    },
+    "chrome_url_overrides":{
+        "newtab": "index.html"
+    }
+}
