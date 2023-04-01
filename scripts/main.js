@@ -93,13 +93,17 @@ function showName(userName){
 
 function showBackgroud(themeList){
     let banner = document.querySelector(".banner");
-    if(!window.navigator.onLine){
-        let url = "images/default_background.jpg";
-        banner.style.background = `url(${url}) center / cover no-repeat fixed`;
-    }else{
-        let url = "https://source.unsplash.com/1280x720/";
-        banner.style.background = `url(${url}?${themeList}) center / cover no-repeat fixed`;
-    }
+    let url = 'https://source.unsplash.com/1280x720';
+    fetch(url)
+        .then( (response) => {
+            banner.style.background = `url(${url}?${themeList}) center / cover no-repeat fixed`;
+        })
+        .catch((error) => {
+            let msg = 'Display defualt background.';
+            console.log(`Error: ${error}. ${msg}`);
+            url = "images/default_background.jpg";
+            banner.style.background = `url(${url}) center / cover no-repeat fixed`;
+        })
 }
 function showSetting(){ // show on the input group
     let settingLocalStorage = getSetting();
