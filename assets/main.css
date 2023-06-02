@@ -1,0 +1,78 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body, html {
+    height: 100%;
+    background-color: black;
+}
+
+.banner {
+    height: 100%;
+    /*  https://source.unsplash.com/1280x720/?city,water,people*/
+    /* background:
+        center / cover
+        no-repeat
+        fixed; */
+    filter: blur(4px);
+    opacity: 0.5;
+}
+
+.medium {
+    height: 60%;
+    width: 80%;
+    position: absolute;
+    margin: auto;
+    color: white;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 150px;
+}
+
+@media screen and (min-width: 576px) {
+    .medium {
+        height: 60%;
+        width: 60%;
+    }
+}
+
+@media screen and (min-width: 996px) {
+    .medium {
+        height: 80%;
+        width: 35%;
+    }
+}
+
+.container {
+    height: 80%;
+    position: absolute;
+    margin: auto;
+    color: white;
+    top: 0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    border-radius: 10px;
+}
+
+.to-do-list {
+    overflow: hidden;
+    max-height: 80%;
+}
+
+.to-do-list:hover {
+    overflow-y: auto;
+}
+
+.to-do-list-block {
+    max-height: 70%;
+}
+
+.to-do-list-block button {
+    color: white;
+}

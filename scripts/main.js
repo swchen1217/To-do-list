@@ -1,141 +1,144 @@
-let template = document.querySelector(".list-item-template").cloneNode(true);
+let KEY_DATA = "toDoList";
+let KEY_SETTING = "setting";
+let DEFAULT_SETTING = {
+  userName: "ZHAO-XIN, PAN",
+  theme: "city",
+}
 let showFinished = false;
-updateList();
-updateWindow();
 init();
-function init(){
-    document.getElementById("addNewListItem").addEventListener('click', addNewListItem);
-    document.getElementById("showItem").addEventListener('click', changeListState);
-    document.getElementById("setting-btn").addEventListener('click', showSetting);
-    document.getElementById("reset").addEventListener('click', resetData);
-    document.getElementById("save-setting").addEventListener('click', updateSetting);
-}
-function addNewListItem(){
-    let contentInput = document.getElementById("itemContent");
-    let content = contentInput.value;
-    let toDoListLocalStorage =  getData();
-    toDoListLocalStorage.push(
-        {
-            data: content,
-            isfinished: false,
-        }
-    );
-    setData(toDoListLocalStorage);
-    contentInput.value = '';
-    
-    updateList();
-}
-function updateList(){
-    let toDoList = getData();
-    let list = document.querySelector(".to-do-list");
-    list.innerHTML = '';
-    for(i = 0;i < toDoList.length;i++){
-        if(!showFinished && toDoList[i].isfinished) continue;
-        // to-do: clone element
-        let listItem = document.querySelector(".list-item-template .list-item").cloneNode(true);
-        let listItemBtn = listItem.getElementsByClassName("btn")[0];
-        let listItemContent = listItem.getElementsByClassName("list-item-content")[0];
-        
-        if(toDoList[i].isfinished){
-            listItemBtn.classList.add("fa-check");
-        }else{
-            listItemBtn.classList.add("fa-circle-thin");
-        }
 
-        // listItemBtn.setAttribute('onclick', `changeItemState(${i})`);
-        listItemBtn.addEventListener('click', changeItemState.bind(null, i));
-        listItemContent.textContent = toDoList[i].data;
-        list.appendChild(listItem);
-    }
-}
-function changeItemState(i){
-    let toDoList = getData();
-    toDoList[i].isfinished = !toDoList[i].isfinished;
-    setData(toDoList);
-    updateList();
-}
-function getData(){
-    let toDoListLocalStorage =  JSON.parse(localStorage.getItem('toDoList')) ?? [];
-    return toDoListLocalStorage;
-}
-function setData(toDoListLocalStorage){
-    localStorage.setItem("toDoList", JSON.stringify(toDoListLocalStorage));
-}
-function resetData(){
-    localStorage.setItem('toDoList', JSON.stringify([]));
-    updateList();
-}
-function changeListState(){
-    let showItemBtn = document.getElementById("showItem");
-    showFinished = !showFinished;
+function init() {
+  document.getElementById("addNewListItem").addEventListener('click', addNewListItem);
+  document.getElementById("showItem").addEventListener('click', changeListState);
+  document.getElementById("settingBtn").addEventListener('click', renderSetting);
+  document.getElementById("reset").addEventListener('click', () => setData([]));
+  document.getElementById("saveSetting").addEventListener('click', saveSetting);
 
-    if(showFinished){
-        showItemBtn.classList.remove("fa-circle-thin");
-        showItemBtn.classList.add("fa-check");// ok
-    }else{
-        showItemBtn.classList.remove("fa-check");// ok
-        showItemBtn.classList.add("fa-circle-thin");
-    }
-    updateList();
+  renderList();
+  updateWindow();
 }
 
-function updateWindow(){
-    let setting = getSetting();
-    let userName = setting['userName'];
-    let themeList = setting['theme'];
-    showName(userName);
-    showBackgroud(themeList);
-}
-function showName(userName){
-    let userNameHTML = document.querySelector(".name span");
-    userNameHTML.textContent = userName;
+function renderList() {
+  let data = getData();
+  let list = document.querySelector(".to-do-list");
+  // ref: https://www.javascripttutorial.net/dom/manipulating/remove-all-child-nodes/
+  // list.innerHTML = '';
+  while (list.firstChild) {
+    list.firstChild.remove();
+  }
+  for (let i = 0; i < data.length; i++) {
+    if (!showFinished && data[i].isFinished) continue;
+    let template = document.querySelector(".list-item-template div").cloneNode(true);
+    let itemBtn = template.getElementsByClassName('list-item-button')[0]
+    let itemContent = template.getElementsByClassName('list-item-content')[0];
+    if (data[i].isFinished) {
+      itemBtn.classList.add("fa-check");
+    } else {
+      itemBtn.classList.add("fa-circle-thin");
+    }
+
+    itemBtn.addEventListener('click', changeItemState.bind(null, i));
+    itemContent.textContent = data[i].data;
+    list.appendChild(template);
+  }
 }
 
-function showBackgroud(themeList){
-    let banner = document.querySelector(".banner");
-    let url = 'https://source.unsplash.com/1280x720';
-    fetch(url)
-        .then( (response) => {
-            banner.style.background = `url(${url}?${themeList}) center / cover no-repeat fixed`;
-        })
-        .catch((error) => {
-            let msg = 'Display defualt background.';
-            console.log(`Error: ${error}. ${msg}`);
-            url = "images/default_background.jpg";
-            banner.style.background = `url(${url}) center / cover no-repeat fixed`;
-        })
-}
-function showSetting(){ // show on the input group
-    let settingLocalStorage = getSetting();
-    let settingInput = document.querySelectorAll(".setting-input-group");
-    for(i = 0;i < settingInput.length;i++){
-        let formControl = settingInput[i].querySelector(".form-control");
-        let id = formControl.id;
-        formControl.value = settingLocalStorage[id];
-    }
-}
-function updateSetting(){
-    let settingLocalStorage = getSetting();
-    let settingInput = document.querySelectorAll(".setting-input-group");
-    for(i = 0;i < settingInput.length;i++){
-        let formControl = settingInput[i].querySelector(".form-control");
-        let id = formControl.id;
-        let value = formControl.value;
-        settingLocalStorage[id] = value;
-    }
-    localStorage.setItem("setting", JSON.stringify(settingLocalStorage));
-    updateWindow();
+function getData() {
+  return JSON.parse(localStorage.getItem(KEY_DATA)) ?? [];
 }
 
-function getSetting(){
-    if(localStorage.getItem('setting')){
-        return JSON.parse(localStorage.getItem('setting'));
-    }else{
-        let setting = {
-            userName: "ZHAO-XIN, PAN",
-            theme: "city",
-        }
-        localStorage.setItem('setting', JSON.stringify(setting));
-        return JSON.parse(localStorage.getItem('setting'));
-    }
+function setData(data) {
+  localStorage.setItem(KEY_DATA, JSON.stringify(data));
+  renderList();
+}
+
+function addNewListItem() {
+  let contentInput = document.getElementById("itemContent");
+  let content = contentInput.value;
+  let data = getData();
+  data.push({
+    data: content,
+    isFinished: false,
+  });
+  setData(data);
+  contentInput.value = '';
+}
+
+function changeItemState(i) {
+  let data = getData();
+  data[i].isFinished = !data[i].isFinished;
+  setData(data);
+}
+
+function changeListState() {
+  let showItemBtn = document.getElementById("showItem");
+  showFinished = !showFinished;
+
+  if (showFinished) {
+    showItemBtn.classList.remove("fa-circle-thin");
+    showItemBtn.classList.add("fa-check");// ok
+  } else {
+    showItemBtn.classList.remove("fa-check");// ok
+    showItemBtn.classList.add("fa-circle-thin");
+  }
+  renderList();
+}
+
+function renderSetting() {
+  let setting = getSetting();
+  let formControls = document.querySelectorAll(".setting-input-group .form-control");
+  for (let i = 0; i < formControls.length; i++) {
+    let id = formControls[i].id;
+    formControls[i].value = setting[id];
+  }
+}
+
+function getSetting() {
+  if (!localStorage.getItem(KEY_SETTING)) {
+    localStorage.setItem(KEY_SETTING, JSON.stringify(DEFAULT_SETTING));
+  }
+  return JSON.parse(localStorage.getItem(KEY_SETTING));
+}
+
+function saveSetting() {
+  let setting = getSetting();
+  let formControls = document.querySelectorAll(".setting-input-group .form-control");
+  for (let i = 0; i < formControls.length; i++) {
+    let id = formControls[i].id;
+    setting[id] = formControls[i].value;
+  }
+  localStorage.setItem(KEY_SETTING, JSON.stringify(setting));
+  updateWindow();
+}
+
+function updateWindow() {
+  let setting = getSetting();
+  renderName(setting['userName']);
+  renderBackground(setting['theme']);
+}
+
+function renderName(userName) {
+  let userNameHTML = document.getElementById("name");
+  userNameHTML.textContent = userName;
+}
+
+function renderBackground(themeList) {
+  let banner = document.querySelector(".banner");
+  let onlineUrl = `https://source.unsplash.com/1280x720/?${themeList}`;
+  let defaultUrl = 'images/default_background.jpg';
+  // banner.style.background = `url(${onlineUrl}) center / cover no-repeat fixed`;
+  banner.style.backgroundImage = `url(${onlineUrl}), url(${defaultUrl})`;
+  banner.style.backgroundPosition = 'center';
+  banner.style.backgroundSize = 'cover';
+  banner.style.backgroundRepeat = 'no-repeat';
+  banner.style.backgroundAttachment = 'fixed';
+  // fetch('https://source.unsplash.com/2x2/?null')
+  //   .then((response) => {
+  //     url = `https://source.unsplash.com/1280x720/?${themeList}`;
+  //   })
+  //   .catch((error) => {
+  //     url = 'images/default_background.jpg';
+  //   }).finally(() => {
+  //   banner.style.background = `url(${url}) center / cover no-repeat fixed`;
+  // })
 }
