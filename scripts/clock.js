@@ -1,4 +1,4 @@
-function updateDate() {
+function updateTime() {
     let dateTime = new Date();
     let hour = dateTime.getHours();
     let min = dateTime.getMinutes();
@@ -14,9 +14,9 @@ function updateDate() {
     }
 
     let clockTime = document.getElementById("time");
-    clockTime.textContent = `${hour}:${min}:${sec}`;
+    clockTime.textContent = `${hour} : ${min} : ${sec}`;
 }
 
 let interval = 1000 // ms
-updateDate();
-setInterval(updateDate, interval);
+updateTime();
+setInterval(updateTime, interval);
