@@ -1,6 +1,6 @@
 {
     "manifest_version" : 3,
-    "name" : "tabliss", 
+    "name" : "My New Tab",
     "version" : "1.0",
     "action" :{
         "default_icon" : "images/home_house_128.png"
